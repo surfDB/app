@@ -2,13 +2,14 @@ import { motion } from "framer-motion";
 import { useAtom } from "jotai";
 import React from "react";
 import styled from "styled-components";
-import { isAuthenticatedAtom } from "../../../pages";
 import Button from "../../components/button/Button";
+import { authAtom } from "../../../pages/_app";
+import { Connect } from "../../components/connect/Connect";
 
 type Props = {};
 
 export default function Home({}: Props) {
-  const [isAutenticated, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
+  const [authenticationStatus, setAuthenticationStatus] = useAtom(authAtom);
 
   return (
     <HeroContainer
@@ -22,7 +23,7 @@ export default function Home({}: Props) {
       </motion.h1>
       <motion.p variants={ChildVariant}>Connect wallet to get started</motion.p>
       <motion.div variants={ChildVariant} className="buttonContainer">
-        <Button onClick={() => setIsAuthenticated(true)}>Connect Wallet</Button>
+        <Connect />
         <Button type="secondary">Docs</Button>
       </motion.div>
     </HeroContainer>

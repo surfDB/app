@@ -4,16 +4,18 @@ import Home from "../app/modules/home/Home";
 import { atom, useAtom } from "jotai";
 import Dashboard from "../app/modules/dashboard/Dashboard";
 import { AnimatePresence } from "framer-motion";
-
-export const isAuthenticatedAtom = atom(false);
+import { authAtom } from "./_app";
 
 const HomePage: NextPage = () => {
-  const [isAutenticated, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
+  const [authenticationStatus, setAuthenticationStatus] = useAtom(authAtom);
 
   return (
     <Layout>
       <AnimatePresence mode="wait">
-        {isAutenticated ? <Dashboard key="Dashboard" /> : <Home key="Home" />}
+        {authenticationStatus === "authenticated" && (
+          <Dashboard key="Dashboard" />
+        )}
+        {authenticationStatus === "unauthenticated" && <Home key="Home" />}
       </AnimatePresence>
     </Layout>
   );

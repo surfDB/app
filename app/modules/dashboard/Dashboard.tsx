@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
+import { Token } from "../../..";
 import Button from "../../components/button/Button";
 import Input from "../../components/input/Input";
 import { InstanceItem } from "../../components/instance/InstanceItem";
@@ -14,6 +16,27 @@ type Props = {};
 export default function Dashboard({}: Props) {
   const [getStartedModalOpen, setGetStartedModalOpen] = useState(false);
   const [createInstanceModalOpen, setCreateInstanceModalOpen] = useState(false);
+
+  const [encrypedToken, setEncrypedToken] = useState<Token>({} as Token);
+  const { address } = useAccount();
+
+  useEffect(() => {
+    (async () => {
+      const res = await (
+        await fetch(`/api/data?schema=token&accessAddress=${address}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+      ).json();
+      console.log({ res });
+      res.length > 0 && setEncrypedToken(res[0]);
+      //
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const testInstances = [
     {
@@ -45,22 +68,26 @@ export default function Dashboard({}: Props) {
         <CreateInstance
           handleClose={() => setCreateInstanceModalOpen(false)}
           isOpen={createInstanceModalOpen}
+          token={encrypedToken}
         />
-        {/* <Button onClick={() => setGetStartedModalOpen(true)}>
-          Get Started
-        </Button> */}
-        <Button onClick={() => setCreateInstanceModalOpen(true)}>
-          Create Instance
-        </Button>
+        {encrypedToken ? (
+          <Button onClick={() => setCreateInstanceModalOpen(true)}>
+            Create Instance
+          </Button>
+        ) : (
+          <Button onClick={() => setGetStartedModalOpen(true)}>
+            Get Started
+          </Button>
+        )}
       </ButtonContainer>
       <motion.div className="label" variants={ChildVariant}>
         <p>My Instances (0)</p>
       </motion.div>
-      {testInstances.map((instance) => (
+      {/* {testInstances.map((instance) => (
         <motion.div variants={ChildVariant} key={instance.url}>
           <InstanceItem name={instance.name} url={instance.url} />
         </motion.div>
-      ))}
+      ))} */}
     </Container>
   );
 }

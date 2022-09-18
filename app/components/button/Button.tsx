@@ -5,9 +5,15 @@ type Props = {
   type?: "primary" | "secondary";
   children: React.ReactNode;
   onClick?: () => void;
+  loading?: boolean;
 };
 
-export default function Button({ type = "primary", children, onClick }: Props) {
+export default function Button({
+  type = "primary",
+  children,
+  onClick,
+  loading,
+}: Props) {
   return (
     <motion.button
       whileHover={{
@@ -32,7 +38,7 @@ export default function Button({ type = "primary", children, onClick }: Props) {
       }}
       onClick={onClick}
     >
-      {children}
+      {loading ? <div className="fa fa-spinner fa-spin"></div> : children}
     </motion.button>
   );
 }

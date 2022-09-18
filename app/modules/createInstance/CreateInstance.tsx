@@ -1,21 +1,29 @@
+import { SurfEncrypt } from "@surfdb/encrypted-sdk";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
+import { Token } from "../../..";
 import Button from "../../components/button/Button";
 import Input from "../../components/input/Input";
 import Modal from "../../components/modal/Modal";
 import Select, { Option } from "../../components/select/Select";
 import { RegionOptions, SizeOptions } from "../../utils/constants";
+import { createDroplet } from "../../utils/digitalOcean";
 
 type Props = {
   isOpen: boolean;
   handleClose: () => void;
+  token: Token;
 };
 
-export default function CreateInstance({ isOpen, handleClose }: Props) {
+export default function CreateInstance({ isOpen, handleClose, token }: Props) {
   const [name, setName] = useState("");
   const [size, setSize] = useState<Option | undefined>();
   const [region, setRegion] = useState<Option | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  const { address } = useAccount();
   return (
     <AnimatePresence>
       {isOpen && (
@@ -55,7 +63,33 @@ export default function CreateInstance({ isOpen, handleClose }: Props) {
               options={SizeOptions}
             />
 
-            <Button>Create Instance</Button>
+            <Button
+              loading={loading}
+              onClick={async () => {
+                setLoading(true);
+                console.log({ name, size, region });
+                const surfEncrypt = new SurfEncrypt();
+                const { decryptedData } = await surfEncrypt.decrypt(
+                  {
+                    accessToken: token.accessToken,
+                  },
+                  token.clientPrivateEncryptionKey,
+                  "ethereum",
+                  address || ""
+                );
+                console.log({ decryptedData });
+                const res = await createDroplet(
+                  name,
+                  region?.value || "",
+                  size?.value || "",
+                  decryptedData[0].accessToken
+                );
+                console.log({ res });
+                setLoading(false);
+              }}
+            >
+              Create Instance
+            </Button>
           </Container>
         </Modal>
       )}

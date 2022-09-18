@@ -1,9 +1,12 @@
+import { SurfEncrypt } from "@surfdb/encrypted-sdk";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
 import Button from "../../components/button/Button";
 import Input from "../../components/input/Input";
 import Modal from "../../components/modal/Modal";
+import { createSSHKey } from "../../utils/digitalOcean";
 
 type Props = {
   isOpen: boolean;
@@ -12,6 +15,8 @@ type Props = {
 
 export default function GetStarted({ isOpen, handleClose }: Props) {
   const [token, setToken] = useState("");
+  const { address } = useAccount();
+  const [loading, setLoading] = useState(false);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -37,7 +42,43 @@ export default function GetStarted({ isOpen, handleClose }: Props) {
               label="Token"
               placeholder="Enter your token"
             />
-            <Button>Connect to Digital Ocean</Button>
+            <Button
+              loading={loading}
+              onClick={async () => {
+                setLoading(true);
+                const surfEncrypt = new SurfEncrypt();
+                const { encryptedData, encryptedSymmetricKey } =
+                  await surfEncrypt.encrypt(
+                    "ethereum",
+                    {
+                      accessToken: token,
+                    },
+                    address || ""
+                  );
+                console.log({ encryptedData, encryptedSymmetricKey });
+                let res = await (
+                  await fetch("/api/data?schema=token", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                      data: encryptedData,
+                      clientPrivateEncryptionKey: encryptedSymmetricKey,
+                      tags: ["Surf", "Data"],
+                    }),
+                  })
+                ).json();
+                console.log({ res });
+                res = await createSSHKey("SurfKey", token);
+                console.log({ res });
+                setLoading(false);
+                handleClose();
+              }}
+            >
+              Connect to Digital Ocean
+            </Button>
           </Container>
         </Modal>
       )}

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
-import MoreIcon from "../../icons/more.svg";
+// import MoreIcon from "../../icons/more.svg";
 
 type Props = {
   name: string;
@@ -13,7 +13,7 @@ export const InstanceItem = ({ name, url }: Props) => {
     <Container>
       <div className="dbName">{name}</div>
       <div className="dbUrl">{url}</div>
-      <MoreIcon />
+      {/* <MoreIcon /> */}
     </Container>
   );
 };

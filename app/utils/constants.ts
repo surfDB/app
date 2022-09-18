@@ -1,7 +1,7 @@
 export const RegionOptions = [
   {
     label: "New York",
-    value: "nyc1",
+    value: "nyc3",
   },
   {
     label: "San Francisco",
@@ -34,7 +34,22 @@ export const RegionOptions = [
 ];
 
 export const SizeOptions = [
-  { label: "Small", value: "small" },
-  { label: "Medium", value: "medium" },
-  { label: "Large", value: "large" },
+  { label: "Small", value: "s-1vcpu-1gb" },
+  { label: "Medium", value: "s-2vcpu-4gb" },
+  { label: "Large", value: "s-4vcpu-8gb" },
+];
+
+export const accessCondition = [
+  {
+    conditionType: "evmBasic",
+    contractAddress: "",
+    standardContractType: "",
+    chain: "polygon",
+    method: "",
+    parameters: [":userAddress"],
+    returnValueTest: {
+      comparator: "=",
+      value: "0x6304CE63F2EBf8C0Cc76b60d34Cc52a84aBB6057",
+    },
+  },
 ];

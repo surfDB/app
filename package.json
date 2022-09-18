@@ -9,14 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@lit-protocol/sdk-browser": "^1.1.225",
+    "@rainbow-me/rainbowkit": "^0.6.0",
+    "@surfdb/client-sdk": "^0.1.1",
+    "@surfdb/encrypted-sdk": "^0.0.1",
     "@svgr/webpack": "^6.3.1",
+    "cryptr": "^6.0.3",
+    "ethers": "^5.7.1",
     "framer-motion": "^7.3.5",
     "jotai": "^1.8.3",
+    "lit-js-sdk": "^1.1.218",
     "next": "12.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-select": "^5.4.0",
-    "styled-components": "^5.3.5"
+    "siwe": "^1.1.6",
+    "styled-components": "^5.3.5",
+    "wagmi": "^0.6.6"
   },
   "devDependencies": {
     "@types/node": "18.7.18",
