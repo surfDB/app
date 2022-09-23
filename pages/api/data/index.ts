@@ -17,6 +17,16 @@ export default async function handler(
         })
       );
       break;
+    case "PATCH":
+      res.status(200).json(
+        await surfClient.update(req, res, {
+          schema: req.query.schema as string,
+          data: req.body,
+          id: req.query.id as string,
+        })
+      );
+      break;
+
     case "GET":
       res.status(200).json(
         (await surfClient.getAll(req, res, {

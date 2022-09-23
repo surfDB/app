@@ -1,12 +1,10 @@
 import { SurfEncrypt } from "@surfdb/encrypted-sdk";
-import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
 import { Instance, Token } from "../../..";
 import { createCeramic, createSurf } from "../../utils/controller";
 import { getDroplet } from "../../utils/digitalOcean";
-// import MoreIcon from "../../icons/more.svg";
 
 type Props = {
   instance: Instance;
@@ -14,7 +12,7 @@ type Props = {
 };
 
 export const InstanceItem = ({
-  instance: { doId, ip, name, ceramicNode },
+  instance: { doId, ip, name, ceramicNode, id },
   token,
 }: Props) => {
   const { address } = useAccount();
@@ -31,7 +29,7 @@ export const InstanceItem = ({
 
   useEffect(() => {
     (async () => {
-      if (token?.accessToken) {
+      if (token?.accessToken && !ip) {
         const surfEncrypt = new SurfEncrypt();
         const { decryptedData } = await surfEncrypt.decrypt(
           {
@@ -55,7 +53,7 @@ export const InstanceItem = ({
   }, [token]);
 
   useEffect(() => {
-    if (decryptedToken.accessToken.length > 0) {
+    if (decryptedToken.accessToken.length > 0 && !ip) {
       (async () => {
         // fetch every 5 seconds for 5 minutes
         for (let i = 0; i < 60; i++) {
@@ -64,17 +62,34 @@ export const InstanceItem = ({
           if (droplet.droplet.networks.v4[0]?.ip_address) {
             setDropletStatus("initialzing surf server");
             setDropletIp(droplet.droplet.networks.v4[0].ip_address);
+            const res1 = await (
+              await fetch(`/api/data?schema=instance&id=${id}`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                  data: {
+                    ip: droplet.droplet.networks.v4[0].ip_address,
+                  },
+                  tags: ["Surf", "Data"],
+                }),
+              })
+            ).json();
+            console.log({ res1 });
             break;
           }
           await new Promise((resolve) => setTimeout(resolve, 5000));
         }
       })();
     }
-  }, [decryptedToken, doId]);
+  }, [decryptedToken, doId, id, ip]);
 
   useEffect(() => {
     if (dropletIp) {
       (async () => {
+        console.log("creating instance!");
         await new Promise((resolve) => setTimeout(resolve, 15000));
         let res;
         console.log({ ceramicNode });
@@ -82,7 +97,7 @@ export const InstanceItem = ({
           res = await createCeramic(
             dropletIp,
             "sgp1",
-            "surf4/ipfs/",
+            "surf5/ipfs/",
             decryptedToken.accessKey,
             decryptedToken.accessSecret,
             "sgp1.digitaloceanspaces.com"
@@ -98,12 +113,26 @@ export const InstanceItem = ({
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dropletIp]);
+
+  useEffect(() => {
+    (async () => {
+      if (ip) {
+        const res = await fetch(`http://${ip}:3000/`);
+        if (res.ok) {
+          setDropletStatus("active");
+        } else {
+          setDropletIp(ip);
+        }
+      }
+    })();
+  }, [ip]);
 
   return (
     <Container>
       <div className="dbName">{name}</div>
-      <div className="dbUrl">{dropletIp}</div>
+      <div className="dbUrl">{dropletIp || ip}</div>
       <div className="dbUrl">{dropletStatus}</div>
       {/* <MoreIcon /> */}
     </Container>

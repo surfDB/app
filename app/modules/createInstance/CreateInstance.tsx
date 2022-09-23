@@ -49,7 +49,7 @@ export default function CreateInstance({ isOpen, handleClose, token }: Props) {
           },
           credentials: "include",
           body: JSON.stringify({
-            name: "surf4",
+            name: "surf5",
             accessKey: decryptedData[1].accessKey,
             accessSecret: decryptedData[2].accessSecret,
           }),
