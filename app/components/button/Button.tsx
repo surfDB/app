@@ -35,6 +35,7 @@ export default function Button({
         textTransform: "uppercase",
         letterSpacing: "0.15rem",
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.2)",
+        width: "100%",
       }}
       onClick={onClick}
     >

@@ -1,5 +1,5 @@
 import { SurfClient } from "@surfdb/client-sdk";
 
 export const surfClient = new SurfClient({
-  client: "http://localhost:8080",
+  client: "http://localhost:3000",
 });

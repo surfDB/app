@@ -94,7 +94,7 @@ const Container = styled(motion.div)<{
   background-color: #222222cc;
   box-shadow: 0px 14px 14px rgba(0, 0, 0, 0.2);
   padding: 2rem 4rem;
-  width: 40%;
+  width: 50%;
 
   .modalTitle {
     font-size: 2rem;

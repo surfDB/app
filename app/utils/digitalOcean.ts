@@ -1,3 +1,5 @@
+import { S3, CreateBucketCommand } from "@aws-sdk/client-s3";
+
 export const createSSHKey = async (name: string, digitaloceanToken: string) => {
   return await (
     await fetch("https://api.digitalocean.com/v2/account/keys", {
@@ -44,4 +46,36 @@ export const createDroplet = async (
       }),
     })
   ).json();
+};
+
+export const getDroplet = async (id: number, digitaloceanToken: string) => {
+  return await (
+    await fetch(`https://api.digitalocean.com/v2/droplets/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${digitaloceanToken}`,
+      },
+    })
+  ).json();
+};
+
+export const createSpace = async (
+  name: string,
+  accessKeyId: string,
+  secretAccessKey: string
+) => {
+  console.log({ name, accessKeyId, secretAccessKey });
+  const s3Client = new S3({
+    endpoint: "https://sgp1.digitaloceanspaces.com",
+    region: "us-east-1",
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+
+  const data = await s3Client.send(new CreateBucketCommand({ Bucket: name }));
+  console.log("Success", data.Location);
+  return data;
 };

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.171.0",
     "@lit-protocol/sdk-browser": "^1.1.225",
     "@rainbow-me/rainbowkit": "^0.6.0",
     "@surfdb/client-sdk": "^0.1.1",

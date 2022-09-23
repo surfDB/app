@@ -9,7 +9,7 @@ export default async function handler(
   const { method } = req;
   switch (method) {
     case "POST":
-      console.log(req.query.schema);
+      console.log(req.body);
       res.status(200).json(
         await surfClient.create(req, res, {
           schema: req.query.schema as string,

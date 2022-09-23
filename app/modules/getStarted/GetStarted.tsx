@@ -15,6 +15,8 @@ type Props = {
 
 export default function GetStarted({ isOpen, handleClose }: Props) {
   const [token, setToken] = useState("");
+  const [accessKey, setAccessKey] = useState("");
+  const [accessSecret, setAccessSecret] = useState("");
   const { address } = useAccount();
   const [loading, setLoading] = useState(false);
   return (
@@ -42,6 +44,18 @@ export default function GetStarted({ isOpen, handleClose }: Props) {
               label="Token"
               placeholder="Enter your token"
             />
+            <Input
+              value={accessKey}
+              onChange={(val) => setAccessKey(val)}
+              label="Access Key"
+              placeholder="Enter your access key"
+            />
+            <Input
+              value={accessSecret}
+              onChange={(val) => setAccessSecret(val)}
+              label="Access Secret"
+              placeholder="Enter your access secret"
+            />
             <Button
               loading={loading}
               onClick={async () => {
@@ -52,6 +66,8 @@ export default function GetStarted({ isOpen, handleClose }: Props) {
                     "ethereum",
                     {
                       accessToken: token,
+                      accessKey,
+                      accessSecret,
                     },
                     address || ""
                   );
@@ -71,7 +87,7 @@ export default function GetStarted({ isOpen, handleClose }: Props) {
                   })
                 ).json();
                 console.log({ res });
-                res = await createSSHKey("SurfKey", token);
+                // res = await createSSHKey("SurfKey", token);
                 console.log({ res });
                 setLoading(false);
                 handleClose();

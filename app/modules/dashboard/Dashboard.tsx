@@ -1,8 +1,9 @@
+import { SurfRealtime } from "@surfdb/client-sdk";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
-import { Token } from "../../..";
+import { Instance, Token } from "../../..";
 import Button from "../../components/button/Button";
 import Input from "../../components/input/Input";
 import { InstanceItem } from "../../components/instance/InstanceItem";
@@ -19,6 +20,29 @@ export default function Dashboard({}: Props) {
 
   const [encrypedToken, setEncrypedToken] = useState<Token>({} as Token);
   const { address } = useAccount();
+
+  const [instances, setInstances] = useState<Instance[] | undefined>([]);
+
+  useEffect(() => {
+    const realtime = new SurfRealtime({
+      client: "http://localhost:3000",
+    });
+
+    realtime.onCreate(async (row: Instance) => {
+      console.log({ row });
+      const res = await (
+        await fetch(`/api/data?schema=instance&accessAddress=${address}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+      ).json();
+      console.log({ res });
+      setInstances(res);
+    });
+  }, [address]);
 
   useEffect(() => {
     (async () => {
@@ -38,20 +62,23 @@ export default function Dashboard({}: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const testInstances = [
-    {
-      name: "my-db-instance",
-      url: "http://137.184.32.138:4000",
-    },
-    {
-      name: "surf-test-instance",
-      url: "http://117.284.39.118:4000",
-    },
-    {
-      name: "third-instance",
-      url: "http://124.84.132.14:4000",
-    },
-  ];
+  useEffect(() => {
+    (async () => {
+      const res = await (
+        await fetch(`/api/data?schema=instance&accessAddress=${address}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+      ).json();
+      console.log({ res });
+      setInstances(res);
+      //
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
@@ -70,7 +97,7 @@ export default function Dashboard({}: Props) {
           isOpen={createInstanceModalOpen}
           token={encrypedToken}
         />
-        {encrypedToken ? (
+        {encrypedToken.accessToken ? (
           <Button onClick={() => setCreateInstanceModalOpen(true)}>
             Create Instance
           </Button>
@@ -83,11 +110,11 @@ export default function Dashboard({}: Props) {
       <motion.div className="label" variants={ChildVariant}>
         <p>My Instances (0)</p>
       </motion.div>
-      {/* {testInstances.map((instance) => (
-        <motion.div variants={ChildVariant} key={instance.url}>
-          <InstanceItem name={instance.name} url={instance.url} />
+      {instances?.map((instance) => (
+        <motion.div variants={ChildVariant} key={instance.ip}>
+          <InstanceItem instance={instance} token={encrypedToken} />
         </motion.div>
-      ))} */}
+      ))}
     </Container>
   );
 }
@@ -109,4 +136,5 @@ const Container = styled(motion.div)`
 
 const ButtonContainer = styled(motion.div)`
   margin-top: 1rem;
+  width: 30%;
 `;
